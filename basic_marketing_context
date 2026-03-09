@@ -1,0 +1,123 @@
+/* Basic clauses and simple select statements to get data from SQL database
+The purpose of this library is to help my day-to-day life and yours as a marketing data analyst.
+I sprinkled some humour along the way to make it easier for me to understand and visualise.
+Hopefully, it makes SQL easier for you as it did for me */
+
+--Simple SELECT statement, takes out the full table or just the chosen columns 
+
+SELECT *
+FROM table_name 
+
+-- to get only certain columns
+SELECT 
+column_1,
+column_2,
+column_3
+FROM
+table_name
+
+-- pay attention to the spelling of the table name and column names SQL is picky for perfection
+
+/*============================================================================================================================*/
+
+--WHERE Clause : It filters out data based on a certain condition. String values need to be in single 'quates'. Filtering happens row level.
+
+-- Use when you need to slice your data into segments 
+--opt in 
+SELECT email_list, first_name, last_name
+FROM customer_sign_up
+WHERE region = 'North-America'
+AND marketing_opt_in = True;
+
+--High value customer segmentation
+SELECT customer_id, total_lifetime_spend
+FROM customer_spend
+WHERE total_lifetime_spend > 500;
+
+--seasonal campaign performance to see if money spent wisely
+SELECT ad_id, clicks, conversions
+FROM ad_performance
+WHERE campaign_name = 'Black Friday' 
+AND platform = 'instagram';
+
+--Re-engagement 
+SELECT user_id, last_login_date
+FROM users
+WHERE last_login_datw < '2025-12-31' 
+AND account_status = 'Active';
+/*===================================================================================================================================*/
+
+--SORT YOUR DATA 
+-- ORDER BY  It sorts your data, prioritising to see what isnthe biggest joy or the biggest pain. It ranks your best campaigns and the worst 
+
+-- Show me, spenders in descending order (from highest to lowest)
+SELECT customer_name, total_spend
+FROM customers
+WHERE city = 'London'
+ORDER BY total_spend DESC;
+
+-- show me the TOP 5 sopenders
+SELECT TOP 5 customer_name, total_spend
+FROM customers
+WHERE city = 'London'
+ORDER BY total_spend DESC;
+-- NESTED ORDER BY: If there is repetition in the first condition, adding an extra column of information (Sort within the sort)
+--You want to see daily sales but you also want to see which platform performs the best
+
+SELECT date, platform, revenue
+FROM ad_perfromance
+ORDER BY date DESC, revenue DESC;
+
+--AGGREGATE 
+--GROUP BY. collects (groups data into categories) 
+SELECT 
+channel_name 
+SUM (revenue) AS total_revenue_per_channel
+FROM marketing_data
+GROUP BY channel;
+-- Result: total revenue by channel. If you select a category, you must group by that. The order of columns matters.
+
+/************************************************************************************************************************************************************
+*/
+--HAVING It filters aggregated data, used after GROUP BY . It acts as a quality control. 
+-You grouped your ads by campaign_name, you have the total conversion for each and want to see only the ones generated over 50 conversions
+SELECT campaign_name, SUM(conversion) as total_conversions
+FROM ad_performance
+GROUP BY campaign_name 
+HAVING SUM(conversions) > 50;
+
+/******************************************************************************************************************************************************************
+*/
+--DISTINCT 
+--DEduplicates. You have a list of 10000 ad clicks but want to know how many individuals clicked.
+SELECT DISTINCT 
+user_email
+FROM 
+ad_clicks
+-- used for data cleansing to see how many distinct values we have for analysis. It is an expensive operation; use it only if you really have to 
+/*******************************************************************************************************************************************************************
+*/
+/*
+The order of basic clauses 
+SELECT
+DISTINCT 
+TOP
+FROM
+WHERE
+GROUP BY
+HAVING 
+ORDER BY
+*/
+/* Example:
+ad_performance record clicks
+Which are our top 5 'Summer Campaign' regions profitable from those that generated more than $ 5000
+SELECT TOP 5
+region, platform,
+SUM (clicks) AS total_clicks
+SUM (revenue) AS total_cash
+FROM ad_performance
+WHERE campaign_name = ' Summer Sale'
+GROUP BY region, platform
+HAVING SUM(revenue) > 5000
+ORDER BY total_cash DESC
+
