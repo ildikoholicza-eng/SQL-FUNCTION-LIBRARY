@@ -87,3 +87,19 @@ FROM campaign_leads
 WHERE lifetime_value > 500
 --The where clause is super important. If you execute without it, the whole table gets updated unintentionally and wipes out the data that was there before
 
+DELETE
+DELETE FROMtable_name
+WHERE <condition>
+Delete is for data hygiene to remove inactive users or users that opted out, test data 
+You need the where clause to specify what to delete. Without it,t everything will get wiped out, 
+soft delete, you still have a copy, hard delete gone forever 
+DELETE FROM leads
+WHERE last_open < 2023-12-31
+
+TRUNCATE removes data but does not remove the table; it is to make space for new data before insert 
+often used in the medallion system to insert clean data 
+TRUNCATE silver.customers_table;
+INSERT INTO silver.customers_table
+( id, UPPER(TRIMM(full_name)), address,)
+FROM bronze.customers_table;
+Truncate is faster than delete
