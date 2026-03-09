@@ -1,0 +1,89 @@
+/* 
+Data Definition Language 
+CREATE allows you to create the container for your data. 
+used to create tables. You need to define the data type for each column 
+
+DATA TYPES 
+
+1, NUMERIC 
+INT integer, whole number only 
+(counting clicks, impressions, total leads)
+
+DECIMAL/NUMERIC   exact numbers with decimals
+(budgets, revenue)
+
+FLOAT/REAL  approximate numbers with decimals
+(calculating complex ratios like CTR, CVR)
+
+2, STRING/TEXT 
+
+VARCHAR(n) variable lenght character 
+(campaign names, email addresses, names, 
+NVARCHAR national variable characters for any global languages
+
+CHAR(n) fixed-length text for country code or currency code
+
+TEXT for long strings 
+(reviews, blog posts)
+3, DATE/TIME
+DATE for dates yyyy-mm-dd
+(start and end dates)
+TIMESTAMP/DATETIME stores date and time
+(attribution to know when an ad was clicked)
+BOOLEAN stores only true or false
+(opt in, status or customer is a 'VIP'
+
+
+CREATE TABLE email_list
+(
+subscriber_id INT PRIMARY KEY NOT NULL,
+full_name NVARCHAR (50) NOT NULL,
+eamail VARCHAR(100)UNIQUE NOT NULL,
+signup_time TIMESTAMP,
+DEFAULT CURRENT_TIMESTAMP,
+is_active BOOLEAN DEFAULT TRUE
+);
+
+ALTER to add a new column to the existing database 
+
+ALTER TABLE promo_codes
+ADD column code_name NVARCHAR(20) ;
+
+
+
+DROP   permanently deletes 
+DROP TABLE table_name
+
+----------------------------------------------------------------------------------------------------------------------
+DML DATA MANIPULATION LANGUAGE
+
+
+INSERT INTO add new rows or columns in your database
+single insert a new person singed up
+INSERT INTO (email_list
+subscriber_id, email,
+lead_source)
+VALUES (101, 'alex.marketing@mail.com', 'Facebook')
+;
+
+Multiple insert
+INSERT INTO partners
+(partner_name, category)
+VALUES
+( 'techn', 'Software'),
+('AdVanture', 'Agency');
+--pay attention, you can only insert values matching the value of the data type, no square fits in round 
+
+insert using a source table 
+Write the query to get the data you need and wrap it in INSERT INTO target_table
+
+data migration
+moving prospects into customers
+You have a list of prospects campaign_leads, you need to identify who spent over $500 and move them in vip_club
+INSERT INTO vip_club
+( vip_name, vip_email, total_spent)
+SELECT customer_name, customer_email, lifetime_value
+FROM campaign_leads
+WHERE lifetime_value > 500
+--The where clause is super important. If you execute without it, the whole table gets updated unintentionally and wipes out the data that was there before
+
