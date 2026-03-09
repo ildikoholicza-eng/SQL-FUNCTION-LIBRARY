@@ -83,4 +83,57 @@ Helps identify product or service issues.
 Reasons ( poor experience, bad customer service, better competitor alternatives, price and value mismatch)
 
 
+================================================================================================================================================
+
+10 other important metrics often overlooked 
+
+1, Incremental Lift
+Would the sale have happened anyway, regardless of the ad?
+((TEST GROUP CONVERSIONRATE - CONTROL GROUP CONVERSION RATE) ÷ CONVERSION IN CONTROL GROUP) × 100
+
+It compares the two groups, one is exposed to the ad and the other is not; how much is the difference? Is the ad worth running or not? 
+
+2, CAC payback period
+CAC÷ (MONTHLY REVENUE PER CUSTOMER × GROSS MARGIN)
+How many month it take for the customer to get their money back from the marketing cost? It is used to calculate future cash flow, future potential earnings
+
+3, LTV:CAC  Ratio 
+LIFETIME VALUE CUSTOMER ÷ ACQUIZITION COST 
+
+Less than 1 spending more to acquire
+1-3 healthy growth
+more than 3 very efficient
+For every 1 dollar spent acquiring customers, how much you earn over life time of the customer
+It measures the efficiency and profitability of each customer.
+Shows:
+Whether marketing is generating profitable customers helps to decide funding, budget allocation, and retention focus.
+
+
+4, Share of Voice (SOV)
+How much a brand is heard. Compared to market competitors 
+((Brand Mentions/ ad spent/ impressions ) ÷ (total market mentions/ ad spend/ impressions)) × 100
+Brand Awareness, Competitive Benchmarking, Forecast Market Share
+Budget decision
+
+5, MER Marketing Efficiency Ratio
+Total revenue / Total marketing spend 
+It looks at the big picture rather than the individual and efficiency 
+
+6, Cohort Analysis 
+time-lapse of customer behaviour.
+Follow a group of people over time to see how marketing, product, or seasonality effects over time.
+(NUMBER OF USERS ACTIVE IN PERIOD X ÷ NUMBER OF USERS IN COHORT AT START) × 100
+
+
+7, REPEAT PURCHASE RATE 
+To evaluate the email marketing effectiveness, it is much cheaper to retain a customer than to get a new one.
+(CUSTOMER PURCHASE> 1 ÷ TOTAL NUMBER OF CUSTOMERS) × 100
+
+8, Funnel drop off Rate 
+To see where people drop out, helps to see where the leaking is, helps to optimise the funnel, helps to fix ux issues 
+(USERS ENTERED THE FUNNEL STAGE - NUMBER OF USERS ENTERING NEXT STAGE ) × 100 
+
+9, Conversion Value per Lead (CVL)
+TOTAL SALES VALUE / TOTAL NUMBER OF LEADS 
+
 
