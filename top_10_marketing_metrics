@@ -1,1 +1,86 @@
+/*
+Marketing calculations are important to know what is working and what is not.
+Below is a list of the top 10 most important formulas to help you evaluate 
+the performance of your marketing 
+
+1, CTR ( Click Through Rate )
+(CLICKS ÷ IMPRESSIONS)× 100
+clicks = number of times people clicked 
+impression = number of time ad was shown 
+How attractive is your ad? Out of everyone seen it, how many wanted to learn more?
+High: the message resonates, the targeting is relevant, creative is strong
+Low: poor targeting, weak creative, wrong audience, unclear value proposition, ad fatigue, bad headline
+Top of the funnel metric
+Good for A/B testing
+
+Email = (EMAIL LINK CLICK ÷ EMAIL DELIVERED) × 100
+
+2, CVR (Conversion Rate)
+(CONVERSIONS ÷ CLICKS) × 100 
+It measures the effectiveness of the landing page 
+Conversion = Desired action taken
+Visitors = people who landed on the landing page
+Each step has its conversion rate (sign up, download lead magnet, checkout, purchase) 
+Email sent - clicks- purchase
+
+Funnel analysis to measure the CVR at each step of the funnel to see where people drop off 
+CVR shows if the traffic is quality, high intent, the message resonates, and the ad  quality is good or not.
+
+
+3, CPL (Cost per Lead) 
+TOTAL AD SPENT ÷ TOTAL LEADS 
+
+It tells whether lead generation is affordable. How much money do we spend to get one potential customer?
+LEAD = request a demo, sign up, watch free webinar, and trials. 
+Leads later converted through the sales team 
+
+LEAD-TO-CONVERSION-RATE (NUMBER OF CUSTOMERS ÷ NUMBER OF LEADS) × 100
+What percentage of the leads eventually became customers
+Sometimes, high-quality but fewer leads generate more money
+
+4, ROAS (Return on Ad Spend
+REVENUE FROM ADS ÷ COST OF ADS 
+Gross revenue generated for every dollar spent 
+Sales driven by the ad campaign
+It helps to decide 
+- which campaign to scale 
+- which one to stop
+- where to allocate the budget
+
+High ROAS does not mean profitable, as some high-ticket items might have low profit margin. Same for services. On long run, maintenance can outgrow the effort.
+
+5, ROI (Return on Investment)
+(( REVENUE-COST)÷ COST ) × 100
+This accounts for profitability
+It helps to evaluate the entire campaign, compare marketing channels, decide future budgets, reporting to management.
+It is advisable to look at customer lifetime value how much more a customer generates over time.
+
+6, CAC (CUSTOMER ACQUISITION COST)  
+(TOTAL MARKETING + SALES EXPENSES) ÷ NUMBER OF NEW CUSTOMERS ACQUIRED 
+It shows whether marketing efforts are profitable and sustainable in the long run. It helps with planning for long-term budgeting and growth 
+
+7, Customer Lifetime Value (CLV)
+(AVERAGE ORDER VALUE × PURCHASE FREQUENCY × AVERAGE CUSTOMER LIFESPAN 
+How much a customer worth over time 
+
+8, Cost per millie (CPM) 
+(TOTAL COST ÷ TOTAL IMPRESSIONS) × 1000
+It measures the cost of awareness 
+It shows how effective brand awareness is 
+
+9, Bounce Rate
+  ( NUMBER OF SINGLE-PAGE VISIT ÷ TOTAL WEBSITE VISIT )× 100
+It shows the effectiveness of the landing page, it can indicate ux, seo efforets, headlines, call to action, and traffic relevance 
+
+10, Curn Rate 
+The percentage of customers 
+who stop using your services is mainly for subscription-based services. 
+( NUMBER OF CUSTOMERS LOST ÷ TOTAL CUSTOMERS AT START OF PERIOD ) × 100
+
+Show customer retention,
+Directly affects growth
+Helps identify product or service issues. 
+Reasons ( poor experience, bad customer service, better competitor alternatives, price and value mismatch)
+
+
 
