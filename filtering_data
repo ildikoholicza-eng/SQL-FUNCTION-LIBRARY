@@ -1,1 +1,98 @@
+Filtering data 
+Comparision 
+Equal =
+Not Equal !=
+Greater >
+Greater or Equal >=
+Less <
+Less or Equal <= 
+Example 
 
+Equal to
+Customers came from a specific source
+SELECT *
+FROM leads
+WHERE source = 'Instagram';
+
+Find high-value customers who have made more than 10 purchases
+SELECT customer_id
+FROM sales_data
+WHERE
+purchase_count >= 10 ;
+
+Find customers who have not interacted much and want to send a follow up eamil to keep them in the loop
+SELECT email
+FROM leads
+WHERE click_count <3;
+
+Exclude internal test accounts to stay accurate 
+SELECT 
+email, signup_date 
+FROM campaign_leads
+WHERE lead_type <> 'Test'
+
+
+LOGICAL OPERATORS 
+
+AND (Both conditions must be true)
+Use it when you need a very specific group. 
+For example, you want to find customers who are from London and have spent more than $100
+SELECT email
+FROM customers
+WHERE city = 'London' AND total_spent > 100;
+
+OR (Either condition can be true)
+Use or when you want to broaden your search 
+
+You want to find customers who came from either Instagram or TikTok
+SELECT email
+FROM leads
+WHERE source = 'Instagram'
+OR source ='TikTok'
+;
+
+NOT (Must not be true)
+Use it when you want to exclude a group
+For example, you want to see all of your subscribers 
+SELECT email
+FROM subscribers
+WHERE NOT status = 'Unsubscribed';
+
+BETWEEN (the range rule)
+It is used to filter an inclusive range to target a specific group
+Let's find all of our millennials so we can target them with relevant ads
+SELECT email
+FROM users
+WHERE age BETWEEN 25 AND 35;
+
+IN ( The list rule)
+It allows you to specify multiple values in a single WHERE clause. It is much cleaner than using several or clauses
+
+Find leads that came from your top 3 performing social media platforms 
+SELECT email
+FROM leads
+WHERE source IN ('Instagram', 'TikTok', 'Youtube');
+
+NOT IN  ( The exclusion list ruler)
+It pulls everything except the values in your list. It is great to exclude entire regions or categories.
+
+Example: Pull all of the information except the internal testing and international partners.
+
+SELECT total_sales
+FROM regional_reports
+WHERE region_name NOT IN  ('international', 'internal');
+
+
+-------------------------------------------------------------------------------------------------------------------------
+
+HIDDEN TRICKS AND TIPS
+
+BETWEEN includes 1 and 10 if you want to include only the middle men use >1 AND <10
+
+If you have a long list of campaign names, use IN much quicker and easier than multiple OR
+
+Comparison operators ignore NULL cells . If you want to find people with phone numbers not entered you ned to use WHERE phone IS NULL
+
+Text sensitivity: make sure everything is standardised before comparing (use UPPER, LOWER, TRIMM) if needed.
+
+NOT IN your exclusion list must not contain NULL
