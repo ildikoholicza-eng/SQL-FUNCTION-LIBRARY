@@ -1,0 +1,420 @@
+/*
+
+==============================================================================7
+This repository contains a set of SQL-based data validation checks designed to ensure data quality before
+moving data from the Bronze layer into the Silver layer.
+Bronze is data ingestion as-is, Silver is cleaned and structured layer ready for schema design.
+
+
+Purpose
+
+The goal of this repository is to provide a simple, consistent, and reusable framework for validating marketing
+and e-commerce data before transformation and analysis. It forms a reliable foundation for growth marketing analytics
+Rather than immediately cleaning or modifying data, this layer focuses on identifying and quantifying potential
+data quality issues.
+-Data issues are detected early
+-Assumptions are validated with data owners
+-Transformations in the Silver layer are based on known and documented rules.
+
+Completeness
+	Detection of NULL values in key columns (e.g., customer_id, session_id, event_date)
+	Identification of empty or white space-only string, and missing data 
+
+
+Uniqueness
+	Ensure that activities or sessions are not unintentionally duplicated
+	Duplicate customer or session identifier
+	Repeated events due to tracking issues or ingestion issues.
+	Each event and conversion is uniquely recorded to avoid inflated metrics.
+
+Validity & Standardization
+Ensure  that data follows expected formats and naming conventions
+	Email, SKU, and product_id format validation 
+	Detection of invalid or unexpected characters
+	Identify inconsistent casing ('Email' vs 'email')
+	Review of distinct categorical values to detect inconsistencies
+	Identify inconsistent delimiters or naming patterns
+	Ensure categorical fields are standardised
+
+Logical and Business Rule Validation
+Ensure date is logically consistent
+	Conversion should not exceed clicks
+	Clicks should not exceed impressions
+	Spemd and revenue values must be positive (unless a refund is explicitly stated)
+	Event dates must align with the campaign start and end dates
+	Campaign attribution and funnel events are logically consistent
+
+Statistical Sanity Checks 
+
+Growth-Marketing-Specific Sanity Checks
+	Min. Max, Avg, Median spend per campaign or channel
+	Median values to detect skewed campaign performance metrics
+	Outlier detection to flag unusually high spend, clicks, or conversions
+	Daily and weekly trend analysis to detect sudden drops in sessions or conversions 
+These checks help to identify underperforming or misattributed campaigns.
+
+Design Principle
+	Simple and clear, each check is a straightforward SQL query
+	Separation of observation and transformation - Bronze layer is never modified
+	issues are documented first
+	Business-aware validation - Checks are aligned with KPIs such as CPA, ROI, ROAS, and engagement metrics
+	Independent checks - One business or data quality rule per SQL block
+	Each query returns counts or statistics to measure the scope of issues
+
+
+
+-----------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
+Workflow
+
+
+1, Raw e-commerce and marketing data ingested into Bronze tables
+2, Validation queries executed to identify missing, duplicate, or inconsistent data
+3, Findings summarised and shared with data owners or marketing ops teams
+4, Data issues discussed and clarified with source system owners
+5, Corrected or validated data is promoted to the Silver layer, ready for the gold layer 
+   where schemas are built for data analysis
+=========================================================================================================
+==============================================================================================*/
+
+--Date Correctness check, NULL, future, too old, outside campaign range, invalid format
+
+
+--Missing date 
+SELECT COUNT(*) AS missing_dates
+FROM table_name
+WHERE column_name IS NULL;
+
+
+--Future date
+
+SELECT COUNT(*) AS furure_dates
+FROM table_name
+WHERE column_name > GETDATE ();
+
+--Too old dates 
+
+SELECT COUNT(*) as too_old_date
+FROM table_name
+WHERE column_name < '2000-01-01';
+
+--Range reference
+SELECT COUNT(*) as before_dt
+FROM table_name
+WHERE column_name < ref_start_dt;
+
+SELECT COUNT(*) as after_dt
+FROM table_name
+WHERE column_name > ref_date_after;
+
+--MIN
+SELECT MIN(column_name) as min_date
+FROM table_name 
+
+--MAX
+
+SELECT MAX(column_name) as max_date
+FROM table_name 
+
+/*
+=========================================================================================================
+=========================================================================================================
+
+CHECK FOR UNIQUE IDs and MISSING IDs 
+*/
+
+--Missing ID
+SELECT COUNT(*) as missing_id
+FROM table_name 
+WHERE column_name IS NULL
+
+--Duplicates
+
+SELECT column_name COUNT(*) AS duplicate
+FROM table_name
+GROUP BY column_name
+HAVING COUNT(*) > 1
+
+
+-- Count total duplicates using subquery
+
+SELECT SUM(duplicate) AS total_duplicates
+FROM( 
+	SELECT COUNT(*) as duplicate_count
+	FROM table_name
+	GROUP BY column_name
+	HAVING COUNT(*) > 1
+	)d
+
+
+-- Check form percentage of missing values, NULLS
+
+SELECT (COUNT(*) * 1.0) / (SELECT COUNT(*)FROM table_name) * 100 AS missing_percentage
+FROM table_name
+WHERE column_name IS NULL
+
+--Detect Bogus values
+
+SELECT COUNT(*) as invalid_value
+FROM table_name 
+WHERE column_name IN ('N/A', 'unknown', 'test', '-', '','0')
+
+--Check for distinct values
+
+SELECT DISTINCT column_name 
+FROM table_name
+ORDER BY column_name
+
+
+--count distinct values
+
+SELECT DISTINCT column_name 
+FROM table_name 
+
+/*
+======================================================================================================================
+--Clear the confusion between GROUP BY and ORDER BY 
+
+ORDER BY
+You have loose marbles on the floor, you place them in line. You have red, green, and yellow 100 altogether in a line
+GROUP BY 
+You have the marbles, you put them in a bucket by colour, 60 red in one bucket, 20 yellow in another bucket, and 
+	The remaining 20 yellow in another bucket.
+====================================================================================================================
+
+The order of clauses in SQL
+SELECT
+DISTINCT
+TOP
+WHERE
+GROUP BY
+HAVING
+ORDER BY = expensive operation as it goes through the entire database 
+
+Worst combo using group by and order by, limit rows when querying if possible. Sorting is expensive
+
+Use WINDOW FUNCTION INSTEAD. It is more flexible too.
+
+===========================================================================================================
+
+*/
+--Window Function
+
+--1, Count touch points - How many times did each person interact?
+SELECT
+cust_name,
+campaign
+COUNT (*) OVER(PARTITION BY cst_name) AS total_interaction
+FROM table_name;
+
+
+--How many times they interacted, how many total clicks
+SELECT
+cst_name,
+campaign
+COUNT(*) OVER(PARTITION BY cst_name) AS total_interaction,
+SUM(clicks) OVER(PARTITION BY cst_name) AS total_clicks
+FROM table_name
+
+-- COUNT (*) how many times
+-- SUM() how much?
+ 
+--total clicks per user 
+SUM ( clicks) OVER(PARTITION BY cst_name)
+
+--Who are the top users
+SELECT cst_name,
+SUM(clicks) AS total_clicks,
+RANK() OVER(ORDERED BY SUM(clicks) DESC) AS rank_users
+FROM table_name
+GROUP BY cst_name
+--Use dense rank for no gaps
+
+-- NTILE
+SELECT sct_name,
+SUM(clicks) AS total_clicks,
+NTILE(4) OVER (PARTITION BY SUM( clicks)DESC) AS quartile
+FROM table_name
+GROUP BY cst_name 
+
+--Compare 2 avg 
+SELECT
+cst_name,
+clicks,
+clicks - AVG(clicks) OVER (PARTITION BY cst_name) ASdiff_from_avg
+FROM table_name
+
+--How engagement builds over time 
+SELECT 
+cst_name,
+date,
+SUM(clicks) OVER(PARTITION BY cst_name ORDERED BY date) AS cumlative_clicks
+FROM table_name
+
+-- Channel contribution, channel weight
+SELECT 
+cst_name,
+clicks, 
+clicks * 1.0 / SUM(clicks) OVER(PARTITION BY cst_name) AS pct_total
+FROM table_name
+
+/*
+=============================================================================================
+============================================================================================
+Things to remember
+
+Latest action ROW_NUMBER
+First Campaign  FIRST_VALUE
+Total clicks SUM
+# of interactions  COUNT
+Ranking users RANK or DENSE RANK
+Segmentation NTILE
+Journey LAG/LEAD
+Growth over time SUM(running)
+
+===============================================================================================
+===============================================================================================
+*/
+--CTE common table expression, create a temporary table calculation and use filtering outside
+
+--Divide users into top 25%, mid, and low based on total clicks
+WITH total_clcicks AS(
+(SELECT 
+name,
+SUM(clicks) AS total_clickis
+FROM table_name)
+SELECT
+name, 
+total_clicks,
+NTILE (4) OVER(PARTITION BY total_clicks DESC) AS quartile
+FROM 
+total_clicks
+
+--Subquery is a calculation in the filtering 
+--CTE calculation in a temporary table, which is named and referred back to at filtering 
+/*=========================================================================================
+Joins and set operators*/
+
+
+/*
+===========================================================================================
+========================================================================================
+*/
+
+--1, Customer Lifetime Value is also great for segmentation, identify high value customers
+
+SELECT 
+customer_id,
+COUNT(order_id) AS total_orders,
+SUM(order_value) AS total_spent,
+AVG(order_value) AS avg_order_vale,
+MAX(order_date) AS last_purchase_dt,
+DATEDIFF(CURRENT_DATE,MAX(order_date) AS days_since_last_prch
+FROM orders_table
+GROUP BY customer_id;
+
+--2, Churn risk indicator, customers likely to stop buying, for retention models, email targeting
+
+SELECT customer_id,
+MAX(order_date) AS last_order_dt,
+DATEDIFF(CURRENT_DATE, MAX(order_date)) AS days_inactive,
+COUNT(order_id) AS order_count,
+CASE
+	WHEN DATEDIFF(CURRENT_DATE, MAX(order_date))>60 THEN 1
+	ELSE 0
+END AS churn_flag
+FROM orders_table
+GROUP BY customer_id
+
+
+--3, Purchase frequency (behaviour intensity). engagement level, future activity
+
+SELECT 
+customer_id,
+COUNT(order_id) * 1.0/ NULLIF(DATEDIFF(MAX(order_date),MIN(order_date)),0) AS purchase_frqcy
+FROM orders_table
+GROUP BY customer_id
+
+--4, Product Affinity (recommendation signal) "customer also bought" 
+
+SELECT a.customer_id,
+a.product_id,
+b.product_id AS related_product
+COUNT(*) AS times_bought_together,
+FROM order_items a
+JOIN order_items b
+ON a.order_id = b.order_id 
+AND a.product_id <> b.product_id
+GROUP BY a.customer_id, a.product_id, b.product_id
+ORDER BY times_bought_togehter DESC;
+
+
+--5, Revenue trend per customer (using window functions). Customer growth trajectory, high-value trajectory user
+SELECT 
+customer_id, 
+order_date
+SUM(order_value) OVER(PARTITION BY customer_id 
+ORDER BY order_date) AS cumulative_spend
+FROM orders_table;
+
+-- 6, Recency, frequency, monetry ( RFM model), marketing segmentation, targeting campaigns
+
+SELECT customer_id
+DATEDIFF(CURRENT_DATE, MAX(order_date)) AS recency,
+COUNT(order_id) AS frequncy,
+SUM(order_value) AS monetary
+FROM orders_table
+GROUP BY customer_id;
+
+
+--7, Time between purchases, when the customer will buy next
+
+SELECT customer_id,
+AVG(days_between_orders) AS avg_days_btw_orders
+FROM
+(
+
+SELECT
+customer_id,
+order_date - LAG(order_date)OVER(PARTITION BY customer_id
+ORDER BY order_date) AS dys_btwn_orders
+FROM orders_table)t
+GROUP BY customer_id;
+
+
+--8, Drop-off detection (behaviour change), declining engagement, early churn signals. 
+
+
+SELECT 
+customer_id,
+order_date,
+order_value,
+order_calue - LAG(order_value) OVER(PARTITION BY order_date) AS value_change
+FROM
+orders_table;
+
+
+--9, Campaign response features, likelihood to convert, marketing effectiveness. 
+SELECT 
+customer_id, 
+COUNT(
+	CASE WHEN campaign_clicked = 1 THEN 1
+	END) AS clicks,
+COUNT(
+	CASE WHEN purchase_made = 1 THEN 1
+	END) AS conversions
+	FROM 
+	campaign_date
+	GROUP BY customer_id;
+
+
+
+
+-- 10, Cohort-based retention, retention prediction, lifecycle modelling
+
+SELECT 
+signup_month, 
+activity_month,
+COUNT(DISTINCT user_id) AS active_users
+FROM user_activity
+GROUP BY signup_month, activity_month;
