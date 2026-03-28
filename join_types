@@ -1,1 +1,148 @@
+/*
+==========================================================================================
+This script is about joining tables either horizontally or vertically 
+Join is for joining tables vertically, and set operators to join tables together horizontally. 
+=========================================================================================
+==========================================================================================7
+*/
 
+-- Inner Join. Matches users who both signed up and made a purchase
+SELECT *
+FROM users_table u
+INNER JOIN orders_table o ON u.user_id = o.user_id;
+
+-- Left Join. Keeps all the users, even those who did not purchase, where available, otherwise NULL
+
+SELECT *
+FROM user_table u
+LEFT JOIN orders_table o ON u.user_id = o.user_id;
+
+--Right Join. Keep all purchases, even if users data is missing. Audit data quality or missing user tracking
+--Result:All orders and matching users, otherwise NULL
+SELECT *
+FROM users_table u
+RIGHT JOIN orders o ON u.user_id = o.user_id;
+
+
+--Full Outer Join combines all users and all orders. Tracking gaps and mismatches, everything from both tables matched where possible
+
+SELECT *
+FROM users_table u
+FULL JOIN orders_table o ON u.user_id = o.user_id;
+
+--Cross Join. Combine every campaign with every audience segment. Generates all targeting combinations. 
+-- Campaigns × segments (all possibilities)
+SELECT *
+FROM 
+campaign_table c
+CROSS JOIN segments s ;
+
+--Self Join. Compare a user's current vs previous behaviour. Track behaviour change. Same table linked across time/events
+SELECT
+a.user_id, b.user_id AS referred_user
+FROM users a
+JOIN users b ON a.user_id = b.referred_id;
+
+
+-- Non Equi Join. Assign users to marketing tiers based on spend. Users matched to ranges like VIP tiers.
+
+SELECT *
+FROM users_table u
+JOIN tiers_table t ON u.total_spent BETWEEN t.min_spend AND t.max_spend;
+
+--Left Semi Join. Users who clicked on a campaign. Filter out the audience based on behaviour. Result at least one match.
+
+SELECT *
+FROM users_table u
+WHERE EXISTS 
+(
+SELECT 1 
+FROM clicks c 
+WHERE u.user_id = c.user_id);
+
+
+--Left Anti Join. Users who did not purchase. For retargeting campaigns. Result: Users with no match.in orders
+
+SELECT *
+FROM users_table u
+WHERE NOT EXISTS 
+( 
+SELECT 1
+FROM orsers o 
+WHERE u.users_id = o.user_id);
+
+
+/*=====================================================================================================
+=======================================================================================================
+
+Set Operators: Joining tables horizontally. each table needs to have the same number oc columns with matching 
+data type and the same name for the columns 
+============================================================================================================
+*/
+
+--Union. Combine leads from multiple campaigns, remove duplicates
+SELECT 
+user_id 
+FROM facebook_leads
+UNION
+SELECT user_id
+FROM google_leads;
+
+
+--Union All. Combines all. Measure total volume per channel. All rows, including duplicates
+
+SELECT
+user_id 
+FROM facebook_leads
+UNION ALL
+SELECT 
+user_id 
+FROM google_leads;
+
+
+--Intersect. Users who engaged with both campaigns. Overlapping users
+
+SELECT 
+user_id 
+FROM email_campaign
+INTERSECT 
+SELECT
+user_id 
+FROM paid_ads;
+
+--Except (minus). Users in campaign A but not in campaign B. 
+
+SELECT user_id
+FROM 
+email_campaign
+EXCEPT 
+SELECT 
+user_id
+FROM paid_ads;
+
+/*
+======================================================================================
+
+JOINS 
+Funnel and behaviour analysis. 
+Who converted
+Who dropped off
+Who belongs to which segment
+
+Semi/Anti join for  targeting
+
+Who to target
+Who to exclude
+
+Set Operators for audince building
+Combine audience,
+Find overlaps
+Remove duplicates
+
+Left join to find users who did not purchase
+Anti join to target them
+Union to combine the audience
+Intersect to find high-intent users
+
+================================================================================================
+*/
